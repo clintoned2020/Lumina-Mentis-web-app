@@ -2,7 +2,7 @@
 
 **About**
 
-This project contains everything you need to run the website/app locally.
+This project contains everything you need to run the application locally.
 
 **Edit the code in your local development environment**
 
