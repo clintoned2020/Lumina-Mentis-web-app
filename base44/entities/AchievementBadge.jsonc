@@ -1,0 +1,73 @@
+{
+  "name": "AchievementBadge",
+  "type": "object",
+  "properties": {
+    "badge_id": {
+      "type": "string",
+      "description": "Unique badge identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Badge title"
+    },
+    "description": {
+      "type": "string",
+      "description": "What it takes to earn"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Emoji or icon for the badge"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "streak",
+        "community",
+        "level",
+        "milestone"
+      ],
+      "description": "Badge category"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "bronze",
+      "description": "Rarity tier"
+    },
+    "points_reward": {
+      "type": "number",
+      "default": 50,
+      "description": "Points awarded for earning badge"
+    }
+  },
+  "required": [
+    "badge_id",
+    "title",
+    "description",
+    "icon",
+    "category"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

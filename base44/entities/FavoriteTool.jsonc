@@ -1,0 +1,26 @@
+{
+  "name": "FavoriteTool",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "tool_id": {
+      "type": "string",
+      "description": "Unique identifier of the tool (e.g. meditation-1, breathing-box)"
+    },
+    "tool_type": {
+      "type": "string",
+      "enum": [
+        "meditation",
+        "breathing",
+        "grounding"
+      ]
+    }
+  },
+  "required": [
+    "user_email",
+    "tool_id",
+    "tool_type"
+  ]
+}

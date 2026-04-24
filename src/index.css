@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mobile safe area support */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+html, body {
+  /* Allow pull-to-refresh on mobile; prevent on desktop */
+  overscroll-behavior-y: contain;
+}
+
+.select-none {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Disable text selection on all interactive UI elements */
+button, a, nav, [role="button"], svg {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@layer base {
+  :root {
+    --font-heading: 'Instrument Serif', serif;
+    --font-body: 'Inter', sans-serif;
+
+    /* Light mode — soft white / warm beige base */
+    --background: 36 30% 97%;           /* warm soft white */
+    --foreground: 240 15% 22%;          /* deep muted slate */
+    --card: 0 0% 100%;                  /* pure white cards */
+    --card-foreground: 240 15% 22%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 15% 22%;
+    --primary: 210 50% 60%;             /* calming sky blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 150 28% 88%;           /* soft sage green */
+    --secondary-foreground: 160 20% 22%;
+    --muted: 36 25% 93%;                /* warm beige muted */
+    --muted-foreground: 240 10% 50%;
+    --accent: 280 30% 75%;              /* soft lilac */
+    --accent-foreground: 280 20% 18%;
+    --destructive: 0 72% 62%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 36 20% 88%;               /* warm beige border */
+    --input: 36 20% 88%;
+    --ring: 210 50% 60%;
+    --chart-1: 210 50% 60%;             /* sky blue */
+    --chart-2: 280 30% 70%;             /* lilac */
+    --chart-3: 150 35% 58%;             /* sage green */
+    --chart-4: 20 50% 78%;              /* soft peach */
+    --chart-5: 340 30% 80%;             /* pale pink */
+    --radius: 1rem;
+    --sidebar-background: 36 30% 96%;
+    --sidebar-foreground: 240 15% 22%;
+    --sidebar-primary: 210 50% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 28% 88%;
+    --sidebar-accent-foreground: 160 20% 22%;
+    --sidebar-border: 36 20% 88%;
+    --sidebar-ring: 210 50% 60%;
+  }
+
+  .dark {
+    /* Dark / Sanctuary mode — deep muted dusk tones */
+    --background: 240 18% 10%;          /* deep muted navy */
+    --foreground: 36 25% 90%;           /* warm soft white */
+    --card: 240 15% 14%;
+    --card-foreground: 36 25% 90%;
+    --popover: 240 15% 14%;
+    --popover-foreground: 36 25% 90%;
+    --primary: 210 55% 68%;             /* soft blue, lighter for dark */
+    --primary-foreground: 240 18% 10%;
+    --secondary: 150 20% 20%;           /* deep sage */
+    --secondary-foreground: 150 25% 80%;
+    --muted: 240 12% 18%;
+    --muted-foreground: 240 10% 58%;
+    --accent: 280 28% 62%;              /* muted lilac */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 55% 40%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 12% 20%;
+    --input: 240 12% 20%;
+    --ring: 210 55% 68%;
+    --chart-1: 210 55% 68%;
+    --chart-2: 280 28% 65%;
+    --chart-3: 150 32% 52%;
+    --chart-4: 20 45% 68%;
+    --chart-5: 340 28% 65%;
+    --sidebar-background: 240 18% 10%;
+    --sidebar-foreground: 36 25% 90%;
+    --sidebar-primary: 210 55% 68%;
+    --sidebar-primary-foreground: 240 18% 10%;
+    --sidebar-accent: 150 20% 20%;
+    --sidebar-accent-foreground: 150 25% 80%;
+    --sidebar-border: 240 12% 20%;
+    --sidebar-ring: 210 55% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+  h1, h2, h3 {
+    font-family: var(--font-heading);
+  }
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Prevent pull-to-refresh conflicts */
+.no-pull-to-refresh {
+  overscroll-behavior-y: none;
+  overscroll-behavior: none;
+}
+
+/* Main content area — allow pull-to-refresh, prevent edge overscroll glitches */
+main {
+  overscroll-behavior-y: contain;
+}
+
+/* Prevent overscroll edge cases on all interactive containers */
+[role="dialog"],
+[role="tablist"],
+.drawer,
+.modal {
+  overscroll-behavior: contain;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+/* Sanctuary mode transitions */
+.sanctuary-transition {
+  transition: background-color 0.8s ease, color 0.8s ease;
+}

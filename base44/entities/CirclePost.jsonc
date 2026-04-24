@@ -1,0 +1,127 @@
+{
+  "name": "CirclePost",
+  "type": "object",
+  "properties": {
+    "circle_id": {
+      "type": "string",
+      "description": "Parent circle ID"
+    },
+    "author_email": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "progress_update",
+        "milestone",
+        "motivation",
+        "question"
+      ],
+      "default": "progress_update",
+      "description": "Type of post"
+    },
+    "title": {
+      "type": "string",
+      "description": "Post title"
+    },
+    "body": {
+      "type": "string",
+      "description": "Post content"
+    },
+    "goal_streak": {
+      "type": "number",
+      "description": "Streak count if milestone post"
+    },
+    "goal_title": {
+      "type": "string",
+      "description": "Goal name if sharing progress"
+    },
+    "reaction_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Support reactions/encouragements"
+    },
+    "reactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "clap",
+              "heart",
+              "fire",
+              "rocket"
+            ]
+          }
+        }
+      },
+      "default": [],
+      "description": "List of reactions"
+    },
+    "comment_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "circle_id",
+    "author_email",
+    "type",
+    "body"
+  ],
+  "rls": {
+    "create": {
+      "data.author_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.circle_id": {
+            "_filter": {
+              "entities/WellnessCircle": {
+                "read": {}
+              }
+            }
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

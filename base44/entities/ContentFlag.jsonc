@@ -1,0 +1,59 @@
+{
+  "name": "ContentFlag",
+  "type": "object",
+  "properties": {
+    "reporter_email": {
+      "type": "string"
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "thread",
+        "reply"
+      ],
+      "description": "What was flagged"
+    },
+    "content_id": {
+      "type": "string",
+      "description": "ID of flagged thread or reply"
+    },
+    "content_preview": {
+      "type": "string",
+      "description": "Short preview of the flagged content"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "harmful",
+        "misinformation",
+        "spam",
+        "harassment",
+        "other"
+      ],
+      "default": "other"
+    },
+    "details": {
+      "type": "string",
+      "description": "Additional context from reporter"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "resolved",
+        "dismissed"
+      ],
+      "default": "pending"
+    },
+    "resolved_by": {
+      "type": "string",
+      "description": "Admin email who resolved it"
+    }
+  },
+  "required": [
+    "reporter_email",
+    "content_type",
+    "content_id",
+    "reason"
+  ]
+}

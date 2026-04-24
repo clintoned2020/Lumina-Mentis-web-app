@@ -1,0 +1,81 @@
+{
+  "name": "GroupSession",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "facilitator_email": {
+      "type": "string"
+    },
+    "facilitator_name": {
+      "type": "string"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "description": "ISO datetime string"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "live",
+        "ended"
+      ],
+      "default": "upcoming"
+    },
+    "rsvp_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "group_id",
+    "title",
+    "scheduled_at",
+    "facilitator_email"
+  ],
+  "rls": {
+    "create": {
+      "data.facilitator_email": "{{user.email}}"
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "data.facilitator_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.facilitator_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

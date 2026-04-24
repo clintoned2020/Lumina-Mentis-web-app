@@ -1,0 +1,72 @@
+{
+  "name": "ForumReply",
+  "type": "object",
+  "properties": {
+    "thread_id": {
+      "type": "string",
+      "description": "ID of the parent thread"
+    },
+    "body": {
+      "type": "string",
+      "description": "Reply content"
+    },
+    "author_email": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "upvotes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of user emails who upvoted",
+      "default": []
+    },
+    "is_helpful": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as helpful by thread author or admin"
+    },
+    "is_hidden": {
+      "type": "boolean",
+      "default": false,
+      "description": "Moderation: hide reply"
+    }
+  },
+  "required": [
+    "thread_id",
+    "body"
+  ],
+  "rls": {
+    "create": {
+      "data.author_email": "{{user.email}}"
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.author_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

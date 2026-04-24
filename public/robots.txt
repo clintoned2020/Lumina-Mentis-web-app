@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+Allow: /disorders
+Allow: /disorders/*
+Allow: /remedies
+Allow: /forum
+Allow: /forum/*
+Allow: /directory
+Allow: /mindfulness
+Allow: /toolbox
+Allow: /privacy
+Allow: /terms
+
+# Block sensitive paths
+Disallow: /admin/
+Disallow: /api/
+Disallow: /messages
+Disallow: /dashboard
+Disallow: /profile/
+Disallow: /saved
+Disallow: /journal
+Disallow: /wellness
+Disallow: /wellness-*
+Disallow: /groups
+Disallow: /professional/
+
+# Crawl delay
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: https://luminamentis.com/sitemap.xml

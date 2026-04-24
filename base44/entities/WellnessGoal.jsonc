@@ -1,0 +1,88 @@
+{
+  "name": "WellnessGoal",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Goal title e.g. 'Take medication'"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "medication",
+        "mindfulness",
+        "journaling",
+        "exercise",
+        "sleep",
+        "social",
+        "custom"
+      ],
+      "default": "custom"
+    },
+    "reminder_time": {
+      "type": "string",
+      "description": "Preferred daily reminder time e.g. '08:00'"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekdays",
+        "weekends",
+        "custom"
+      ],
+      "default": "daily"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Current streak count in days"
+    },
+    "target_days": {
+      "type": "number",
+      "default": 21,
+      "description": "Milestone target in days (e.g. 7, 21, 30, 66)"
+    },
+    "completion_history": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Array of ISO date strings when goal was completed"
+    },
+    "last_completed_date": {
+      "type": "string",
+      "description": "ISO date string of last completion"
+    },
+    "note": {
+      "type": "string",
+      "description": "Personal note or intention for this goal"
+    },
+    "user_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "category"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {
+      "data.user_email": "{{user.email}}"
+    },
+    "update": {
+      "data.user_email": "{{user.email}}"
+    },
+    "delete": {
+      "data.user_email": "{{user.email}}"
+    }
+  }
+}

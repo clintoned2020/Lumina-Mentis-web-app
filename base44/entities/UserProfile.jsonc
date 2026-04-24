@@ -1,0 +1,93 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Linked user email"
+    },
+    "username": {
+      "type": "string",
+      "description": "Unique display username e.g. @calmseeker"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Public display name"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "URL to avatar image"
+    },
+    "avatar_color": {
+      "type": "string",
+      "description": "Fallback avatar bg color hex",
+      "default": "#a78bfa"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short personal bio"
+    },
+    "about": {
+      "type": "string",
+      "description": "Longer 'about me' section"
+    },
+    "location": {
+      "type": "string",
+      "description": "City or country"
+    },
+    "website": {
+      "type": "string",
+      "description": "Personal website or link"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Topics or interests"
+    },
+    "joined_label": {
+      "type": "string",
+      "description": "Optional tagline e.g. 'Here to learn'"
+    },
+    "is_banned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Admin: ban user from posting"
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "name": "UserPoints",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "total_points": {
+      "type": "number",
+      "default": 0,
+      "description": "Total accumulated points"
+    },
+    "current_level": {
+      "type": "number",
+      "default": 1,
+      "description": "User level (1-based)"
+    },
+    "points_to_next_level": {
+      "type": "number",
+      "default": 100,
+      "description": "Points needed for next level"
+    },
+    "goal_completions": {
+      "type": "number",
+      "default": 0,
+      "description": "Lifetime goal completions"
+    },
+    "circle_contributions": {
+      "type": "number",
+      "default": 0,
+      "description": "Posts and reactions in circles"
+    },
+    "longest_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Longest wellness goal streak"
+    },
+    "total_reactions_given": {
+      "type": "number",
+      "default": 0,
+      "description": "Total support reactions given to others"
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "name": "WellnessCircle",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the wellness circle"
+    },
+    "description": {
+      "type": "string",
+      "description": "Circle description and purpose"
+    },
+    "focus_area": {
+      "type": "string",
+      "enum": [
+        "meditation",
+        "fitness",
+        "sleep",
+        "medication",
+        "journaling",
+        "mixed"
+      ],
+      "description": "Primary wellness focus"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Creator email"
+    },
+    "member_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Joined member emails"
+    },
+    "is_private": {
+      "type": "boolean",
+      "default": false,
+      "description": "Private vs public circle"
+    },
+    "max_members": {
+      "type": "number",
+      "default": 50,
+      "description": "Maximum members allowed"
+    },
+    "celebration_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total milestone celebrations"
+    },
+    "post_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total posts in circle"
+    },
+    "avatar_color": {
+      "type": "string",
+      "default": "#a78bfa"
+    }
+  },
+  "required": [
+    "name",
+    "focus_area"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

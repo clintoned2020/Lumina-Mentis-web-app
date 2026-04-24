@@ -1,0 +1,53 @@
+{
+  "name": "SavedResource",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "resource_type": {
+      "type": "string",
+      "enum": [
+        "disorder",
+        "remedy",
+        "root_cause"
+      ],
+      "description": "Type of saved resource"
+    },
+    "resource_id": {
+      "type": "string",
+      "description": "ID of the disorder entity"
+    },
+    "resource_name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "resource_slug": {
+      "type": "string",
+      "description": "Slug for linking to disorder detail"
+    },
+    "note": {
+      "type": "string",
+      "description": "Personal note about this saved resource"
+    }
+  },
+  "required": [
+    "resource_type",
+    "resource_id",
+    "resource_name"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {
+      "data.user_email": "{{user.email}}"
+    },
+    "update": {
+      "data.user_email": "{{user.email}}"
+    },
+    "delete": {
+      "data.user_email": "{{user.email}}"
+    }
+  }
+}

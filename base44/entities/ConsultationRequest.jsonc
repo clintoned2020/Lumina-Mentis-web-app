@@ -1,0 +1,105 @@
+{
+  "name": "ConsultationRequest",
+  "type": "object",
+  "properties": {
+    "requester_email": {
+      "type": "string"
+    },
+    "requester_name": {
+      "type": "string"
+    },
+    "professional_id": {
+      "type": "string"
+    },
+    "professional_name": {
+      "type": "string"
+    },
+    "professional_email": {
+      "type": "string",
+      "description": "Email of the professional receiving the request"
+    },
+    "preferred_date": {
+      "type": "string",
+      "description": "Preferred appointment date YYYY-MM-DD"
+    },
+    "preferred_time": {
+      "type": "string",
+      "description": "Preferred time e.g. 10:00 AM"
+    },
+    "session_type": {
+      "type": "string",
+      "enum": [
+        "in_person",
+        "telehealth"
+      ],
+      "default": "in_person"
+    },
+    "concerns": {
+      "type": "string",
+      "description": "What the user wants to address"
+    },
+    "insurance_provider": {
+      "type": "string"
+    },
+    "is_first_time": {
+      "type": "boolean",
+      "default": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "declined",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin notes"
+    }
+  },
+  "required": [
+    "requester_email",
+    "professional_id",
+    "preferred_date"
+  ],
+  "rls": {
+    "create": {
+      "data.requester_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.professional_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

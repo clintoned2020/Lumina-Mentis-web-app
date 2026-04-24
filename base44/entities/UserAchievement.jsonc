@@ -1,0 +1,53 @@
+{
+  "name": "UserAchievement",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "badge_id": {
+      "type": "string",
+      "description": "ID of the badge earned"
+    },
+    "badge_title": {
+      "type": "string"
+    },
+    "badge_icon": {
+      "type": "string"
+    },
+    "earned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When badge was earned"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Progress toward badge (0-100)"
+    }
+  },
+  "required": [
+    "user_email",
+    "badge_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "data.user_email": "{{user.email}}"
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

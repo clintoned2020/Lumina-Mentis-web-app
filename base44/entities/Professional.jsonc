@@ -1,0 +1,104 @@
+{
+  "name": "Professional",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full name of the professional or clinic"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "therapist",
+        "psychiatrist",
+        "psychologist",
+        "clinic",
+        "counselor",
+        "social_worker"
+      ],
+      "description": "Type of professional"
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of specialties e.g. anxiety, depression, trauma",
+      "default": []
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short professional bio"
+    },
+    "location": {
+      "type": "string",
+      "description": "City, state or address"
+    },
+    "telehealth": {
+      "type": "boolean",
+      "default": false,
+      "description": "Offers telehealth sessions"
+    },
+    "accepting_new": {
+      "type": "boolean",
+      "default": true,
+      "description": "Currently accepting new patients"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "English"
+      ]
+    },
+    "insurance": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Accepted insurance providers"
+    },
+    "avatar_color": {
+      "type": "string",
+      "default": "#a78bfa"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "session_fee": {
+      "type": "string",
+      "description": "e.g. $120/session or Sliding scale"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

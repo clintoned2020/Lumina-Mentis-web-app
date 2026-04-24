@@ -1,0 +1,126 @@
+{
+  "name": "ProfessionalProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the professional"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Professional's display name"
+    },
+    "profession_type": {
+      "type": "string",
+      "enum": [
+        "therapist",
+        "psychiatrist",
+        "psychologist",
+        "counselor",
+        "social_worker",
+        "other"
+      ]
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Areas of specialization"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Professional biography"
+    },
+    "credentials": {
+      "type": "string",
+      "description": "License, certifications, education"
+    },
+    "location": {
+      "type": "string",
+      "description": "City, state or region"
+    },
+    "telehealth_available": {
+      "type": "boolean",
+      "default": true,
+      "description": "Offers telehealth sessions"
+    },
+    "in_person_available": {
+      "type": "boolean",
+      "default": false,
+      "description": "Offers in-person sessions"
+    },
+    "accepting_new_clients": {
+      "type": "boolean",
+      "default": true
+    },
+    "session_fee": {
+      "type": "string",
+      "description": "e.g. $120/session or Sliding scale"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "English"
+      ]
+    },
+    "insurance_accepted": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "List of insurance providers accepted"
+    }
+  },
+  "required": [
+    "user_email",
+    "profession_type"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

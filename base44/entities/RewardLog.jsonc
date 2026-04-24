@@ -1,0 +1,50 @@
+{
+  "name": "RewardLog",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User who received the reward"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "goal_completion",
+        "badge_earned",
+        "circle_post"
+      ],
+      "description": "Type of action that earned the reward"
+    },
+    "action_id": {
+      "type": "string",
+      "description": "ID of the action entity to prevent duplicate rewards"
+    }
+  },
+  "required": [
+    "user_email",
+    "action_type",
+    "action_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

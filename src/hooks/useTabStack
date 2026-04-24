@@ -1,0 +1,34 @@
+import { useRef, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+/**
+ * useTabStack — Maintains persistent navigation stacks per tab.
+ * Preserves scroll position and history within each tab's section.
+ */
+export function useTabStack(tabId) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const stackRef = useRef([]);
+
+  // Record current path when location changes
+  useEffect(() => {
+    const currentPath = location.pathname + location.search;
+    if (stackRef.current[stackRef.current.length - 1] !== currentPath) {
+      stackRef.current.push(currentPath);
+    }
+  }, [location.pathname, location.search]);
+
+  // Navigate back within the tab stack
+  const goBack = () => {
+    if (stackRef.current.length > 1) {
+      stackRef.current.pop(); // Remove current
+      const previousPath = stackRef.current[stackRef.current.length - 1];
+      navigate(previousPath, { replace: true });
+    }
+  };
+
+  // Get current stack depth (useful for conditional back button display)
+  const depth = stackRef.current.length;
+
+  return { goBack, depth, stack: stackRef.current };
+}

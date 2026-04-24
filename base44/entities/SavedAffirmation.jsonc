@@ -1,0 +1,35 @@
+{
+  "name": "SavedAffirmation",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string",
+      "description": "The affirmation text"
+    },
+    "date": {
+      "type": "string",
+      "description": "ISO date the affirmation was shown YYYY-MM-DD"
+    }
+  },
+  "required": [
+    "user_email",
+    "text"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {
+      "data.user_email": "{{user.email}}"
+    },
+    "update": {
+      "data.user_email": "{{user.email}}"
+    },
+    "delete": {
+      "data.user_email": "{{user.email}}"
+    }
+  }
+}

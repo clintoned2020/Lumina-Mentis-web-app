@@ -1,0 +1,66 @@
+{
+  "name": "ForumThread",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Thread title"
+    },
+    "body": {
+      "type": "string",
+      "description": "Thread content"
+    },
+    "topic_tag": {
+      "type": "string",
+      "enum": [
+        "anxiety",
+        "depression",
+        "schizophrenia",
+        "adhd",
+        "general",
+        "medication",
+        "coping",
+        "relationships",
+        "recovery"
+      ],
+      "description": "Topic category"
+    },
+    "author_email": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "upvotes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of user emails who upvoted",
+      "default": []
+    },
+    "reply_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_hidden": {
+      "type": "boolean",
+      "default": false,
+      "description": "Moderation: hide thread"
+    },
+    "is_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "Moderation: prevent new replies"
+    }
+  },
+  "required": [
+    "title",
+    "body",
+    "topic_tag"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "name": "CrisisPlan",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "warning_signs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Personal warning signs / triggers"
+    },
+    "coping_strategies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Strategies that help"
+    },
+    "reasons_to_live": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Things that matter / reasons to live"
+    },
+    "safe_environment_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Steps to make environment safer"
+    },
+    "emergency_contacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        }
+      },
+      "default": []
+    },
+    "crisis_lines": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Hotline numbers"
+    },
+    "professional_contact": {
+      "type": "string",
+      "description": "Therapist / doctor contact info"
+    },
+    "last_updated": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {
+      "data.user_email": "{{user.email}}"
+    },
+    "update": {
+      "data.user_email": "{{user.email}}"
+    },
+    "delete": {
+      "data.user_email": "{{user.email}}"
+    }
+  }
+}

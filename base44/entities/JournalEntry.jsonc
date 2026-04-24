@@ -1,0 +1,63 @@
+{
+  "name": "JournalEntry",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "description": "ISO date string YYYY-MM-DD"
+    },
+    "mood": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Mood score 1 (very low) to 5 (very good)"
+    },
+    "mood_label": {
+      "type": "string",
+      "enum": [
+        "very low",
+        "low",
+        "okay",
+        "good",
+        "great"
+      ]
+    },
+    "energy": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Energy level 1-5"
+    },
+    "reflection": {
+      "type": "string",
+      "description": "Main journal text / reflection"
+    },
+    "gratitude": {
+      "type": "string",
+      "description": "Gratitude note"
+    },
+    "intentions": {
+      "type": "string",
+      "description": "Intentions or goals for the day"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User-defined tags e.g. anxiety, sleep, medication",
+      "default": []
+    },
+    "is_private": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "date",
+    "mood"
+  ]
+}
