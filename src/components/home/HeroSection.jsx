@@ -33,7 +33,7 @@ export default function HeroSection() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <p className="text-sm font-medium text-primary tracking-widest uppercase mb-6">
-            A Sanctuary of Understanding
+            Your Sanctuary of Understanding
           </p>
           <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-none tracking-tight mb-8">
             Illuminate<br />
