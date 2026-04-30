@@ -21,6 +21,7 @@ const ENTITY_TABLES = {
   GroupMessage: 'group_message',
   GroupSession: 'group_session',
   SavedAffirmation: 'saved_affirmation',
+  DailyAffirmation: 'daily_affirmation',
   ContentFlag: 'content_flag',
   ForumThread: 'forum_thread',
   SavedResource: 'saved_resource',
@@ -310,6 +311,18 @@ export const base44 = {
       });
       throwIfError(error);
       window.alert('Check your email for a magic sign-in link.');
+    },
+    async signInWithGoogle(redirectTo = window.location.href) {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+          queryParams: {
+            prompt: 'select_account'
+          }
+        }
+      });
+      throwIfError(error);
     },
     _onAuthStateChange(callback) {
       return supabase.auth.onAuthStateChange(async () => {

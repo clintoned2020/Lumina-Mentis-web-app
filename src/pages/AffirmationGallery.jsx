@@ -6,26 +6,50 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AffirmationGallery() {
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [affirmations, setAffirmations] = useState([]);
+  const [dailyPool, setDailyPool] = useState([]);
+  const [newAffirmationText, setNewAffirmationText] = useState('');
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [savingGalleryCopy, setSavingGalleryCopy] = useState(false);
+  const [adminAddStatus, setAdminAddStatus] = useState(null);
 
   useEffect(() => {
     base44.auth.me()
       .then(async (u) => {
         setUser(u);
         if (u) {
+          const profile = await base44.entities.UserProfile.filter({ user_email: u.email }, null, 1);
+          const adminFlag = u.role === 'admin' || !!profile?.[0]?.is_admin;
+          setIsAdmin(adminFlag);
           const results = await base44.entities.SavedAffirmation.filter(
             { user_email: u.email },
             '-created_date',
             50
           );
           setAffirmations(results);
+          if (adminFlag) {
+            try {
+              const pool = await base44.entities.DailyAffirmation.filter({ is_active: true }, '-created_date', 100);
+              setDailyPool(pool);
+            } catch {
+              setDailyPool([]);
+            }
+          }
         }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    if (window.location.hash !== '#my-saved-affirmations') return;
+    const el = document.getElementById('my-saved-affirmations');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [loading, affirmations.length]);
 
   const handleDelete = async (id) => {
     setDeleting(id);
@@ -34,6 +58,51 @@ export default function AffirmationGallery() {
       setAffirmations(prev => prev.filter(a => a.id !== id));
     } finally {
       setDeleting(null);
+    }
+  };
+
+  const handleAddDailyAffirmation = async () => {
+    const text = newAffirmationText.trim();
+    if (!isAdmin || !user || !text || adding) return;
+    setAdminAddStatus(null);
+    setAdding(true);
+    try {
+      const created = await base44.entities.DailyAffirmation.create({
+        text,
+        created_by: user.email,
+        is_active: true
+      });
+      setDailyPool((prev) => [created, ...prev]);
+      setNewAffirmationText('');
+      setAdminAddStatus({
+        type: 'success',
+        message: 'Added to daily rotation.'
+      });
+    } catch (error) {
+      console.error('Failed to add daily affirmation:', error);
+      setAdminAddStatus({
+        type: 'error',
+        message: 'Could not add to daily rotation. If this is your first run, apply the latest Supabase schema update first.'
+      });
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleSaveCopyToMyGallery = async () => {
+    const text = newAffirmationText.trim();
+    if (!user || !text || savingGalleryCopy) return;
+    const today = new Date().toISOString().slice(0, 10);
+    setSavingGalleryCopy(true);
+    try {
+      const created = await base44.entities.SavedAffirmation.create({
+        user_email: user.email,
+        text,
+        date: today,
+      });
+      setAffirmations((prev) => [created, ...prev]);
+    } finally {
+      setSavingGalleryCopy(false);
     }
   };
 
@@ -54,6 +123,61 @@ export default function AffirmationGallery() {
       </div>
 
       <div className="max-w-3xl mx-auto px-6 lg:px-16">
+        {isAdmin && (
+          <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+            <h2 className="font-heading text-xl mb-2">Admin: Add Daily Affirmation</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              New entries are added to the shared daily affirmation rotation for all users.
+            </p>
+            <div className="space-y-3">
+              <textarea
+                value={newAffirmationText}
+                onChange={(e) => setNewAffirmationText(e.target.value)}
+                rows={3}
+                placeholder="Type a new daily affirmation..."
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleAddDailyAffirmation}
+                  disabled={adding || !newAffirmationText.trim()}
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50"
+                >
+                  {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  Add to Daily Rotation
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveCopyToMyGallery}
+                  disabled={savingGalleryCopy || !newAffirmationText.trim()}
+                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-muted/60 disabled:opacity-50"
+                >
+                  {savingGalleryCopy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  Add copy to My Gallery
+                </button>
+              </div>
+              <a
+                href="#my-saved-affirmations"
+                className="inline-block text-sm text-primary underline-offset-4 hover:underline"
+              >
+                Jump to My Gallery
+              </a>
+              {adminAddStatus && (
+                <p className={`text-sm ${adminAddStatus.type === 'success' ? 'text-primary' : 'text-destructive'}`}>
+                  {adminAddStatus.message}
+                </p>
+              )}
+              {dailyPool.length > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Active shared affirmations: {dailyPool.length}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div id="my-saved-affirmations" className="scroll-mt-28">
         {loading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -106,6 +230,7 @@ export default function AffirmationGallery() {
             </div>
           </AnimatePresence>
         )}
+        </div>
       </div>
     </div>
   );

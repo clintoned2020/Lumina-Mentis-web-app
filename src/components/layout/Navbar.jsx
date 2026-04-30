@@ -4,7 +4,7 @@ import { Brain, Menu, X, Shield, Sun, LogOut, ChevronDown, User, Settings, BarCh
 import ProfileSettingsModal from '@/components/profile/ProfileSettingsModal';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { base44, supabase } from '@/api/base44Client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,6 +44,7 @@ export default function Navbar({ sanctuaryMode, onToggleSanctuary, guestBanner }
   const [currentUser, setCurrentUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const location = useLocation();
   const isGuest = sessionStorage.getItem('lumina_guest') === 'true';
 
@@ -56,6 +57,31 @@ export default function Navbar({ sanctuaryMode, onToggleSanctuary, guestBanner }
       }
     }).catch(() => {});
   }, []);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      // Clear local guest marker in case user previously browsed as guest.
+      sessionStorage.removeItem('lumina_guest');
+      // Use direct Supabase sign out with timeout so UI cannot get stuck.
+      await Promise.race([
+        supabase.auth.signOut({ scope: 'global' }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Logout timeout')), 5000))
+      ]);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      // Ensure stale local auth tokens are removed even if signOut errors.
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('sb-') && key.includes('auth-token')) {
+          localStorage.removeItem(key);
+        }
+      });
+      // Hard navigation guarantees auth-gated app re-evaluates as logged out.
+      window.location.assign('/?signed_out=1');
+    }
+  };
 
   return (
     <nav className={`fixed left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50 ${guestBanner ? 'top-7' : 'top-0'}`}
@@ -145,22 +171,23 @@ export default function Navbar({ sanctuaryMode, onToggleSanctuary, guestBanner }
 
             {/* User Avatar Dropdown */}
             {isGuest ? (
-              <button
-                onClick={() => { sessionStorage.removeItem('lumina_guest'); window.location.reload(); }}
-                className="flex items-center gap-2 rounded-xl px-3 py-1.5 bg-muted hover:bg-muted/70 transition-colors text-xs font-medium text-muted-foreground"
-              >
+              <div className="flex items-center gap-2 rounded-xl px-3 py-1.5 bg-muted text-xs font-medium text-muted-foreground">
                 <div className="w-7 h-7 rounded-full bg-border flex items-center justify-center text-muted-foreground text-xs font-bold">G</div>
-                <span className="hidden lg:block">Sign In</span>
-              </button>
+                <span className="hidden lg:block">Guest</span>
+              </div>
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-muted transition-colors">
                     <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                      style={{ backgroundColor: userProfile?.avatar_color || '#a78bfa' }}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden"
+                      style={{ backgroundColor: userProfile?.avatar_url ? 'transparent' : userProfile?.avatar_color || '#a78bfa' }}
                     >
-                      {(currentUser?.full_name || currentUser?.email || 'U')[0].toUpperCase()}
+                      {userProfile?.avatar_url ? (
+                        <img src={userProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        (currentUser?.full_name || currentUser?.email || 'U')[0].toUpperCase()
+                      )}
                     </div>
                     {userProfile?.username && (
                       <span className="hidden lg:block text-xs font-medium text-foreground">
@@ -173,10 +200,14 @@ export default function Navbar({ sanctuaryMode, onToggleSanctuary, guestBanner }
                   <div className="px-3 py-2">
                     <div className="flex items-center gap-2.5 mb-1">
                       <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                        style={{ backgroundColor: userProfile?.avatar_color || '#a78bfa' }}
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 overflow-hidden"
+                        style={{ backgroundColor: userProfile?.avatar_url ? 'transparent' : userProfile?.avatar_color || '#a78bfa' }}
                       >
-                        {(currentUser?.full_name || currentUser?.email || 'U')[0].toUpperCase()}
+                        {userProfile?.avatar_url ? (
+                          <img src={userProfile.avatar_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          (currentUser?.full_name || currentUser?.email || 'U')[0].toUpperCase()
+                        )}
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-semibold truncate">{currentUser?.full_name || 'User'}</p>
@@ -213,12 +244,16 @@ export default function Navbar({ sanctuaryMode, onToggleSanctuary, guestBanner }
                     </>
                   )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => base44.auth.logout()}
-                    className="text-destructive focus:text-destructive flex items-center gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Log out
+                  <DropdownMenuItem asChild className="text-destructive focus:text-destructive">
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="w-full flex items-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Log out
+                    </button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -241,8 +276,8 @@ export default function Navbar({ sanctuaryMode, onToggleSanctuary, guestBanner }
         <ProfileSettingsModal
           user={currentUser}
           onClose={() => setShowSettings(false)}
-          onSaved={(username) => {
-            setUserProfile(p => ({ ...p, username }));
+          onSaved={(savedRow) => {
+            if (savedRow) setUserProfile(savedRow);
             setShowSettings(false);
           }}
         />

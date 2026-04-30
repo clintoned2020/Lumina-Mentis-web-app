@@ -177,6 +177,15 @@ create table if not exists public.saved_affirmation (
   date text
 );
 
+create table if not exists public.daily_affirmation (
+  id uuid primary key default gen_random_uuid(),
+  created_date timestamptz not null default now(),
+  updated_date timestamptz not null default now(),
+  text text not null,
+  created_by text,
+  is_active boolean not null default true
+);
+
 create table if not exists public.favorite_tool (
   id uuid primary key default gen_random_uuid(),
   created_date timestamptz not null default now(),
@@ -391,7 +400,7 @@ declare t text;
 begin
   foreach t in array array[
     'disorder','user_profile','direct_message','forum_thread','forum_reply','notification',
-    'user_follow','wellness_goal','journal_entry','saved_resource','saved_affirmation',
+    'user_follow','wellness_goal','journal_entry','saved_resource','saved_affirmation','daily_affirmation',
     'favorite_tool','crisis_plan','wellness_circle','circle_post','support_group','group_message',
     'group_session','user_points','user_achievement','reward_log','content_flag','professional',
     'professional_profile','consultation_request'
@@ -413,6 +422,7 @@ alter table public.wellness_goal enable row level security;
 alter table public.journal_entry enable row level security;
 alter table public.saved_resource enable row level security;
 alter table public.saved_affirmation enable row level security;
+alter table public.daily_affirmation enable row level security;
 alter table public.favorite_tool enable row level security;
 alter table public.crisis_plan enable row level security;
 alter table public.wellness_circle enable row level security;
@@ -457,6 +467,8 @@ create policy "wellness_goal own" on public.wellness_goal for all using (user_em
 create policy "journal own" on public.journal_entry for all using (user_email = auth.email() or public.is_admin()) with check (user_email = auth.email() or public.is_admin());
 create policy "saved_resource own" on public.saved_resource for all using (user_email = auth.email() or public.is_admin()) with check (user_email = auth.email() or public.is_admin());
 create policy "saved_affirmation own" on public.saved_affirmation for all using (user_email = auth.email() or public.is_admin()) with check (user_email = auth.email() or public.is_admin());
+create policy "public read daily_affirmation" on public.daily_affirmation for select using (is_active = true or public.is_admin());
+create policy "admin write daily_affirmation" on public.daily_affirmation for all using (public.is_admin()) with check (public.is_admin());
 create policy "favorite_tool own" on public.favorite_tool for all using (user_email = auth.email() or public.is_admin()) with check (user_email = auth.email() or public.is_admin());
 create policy "crisis_plan own" on public.crisis_plan for all using (user_email = auth.email() or public.is_admin()) with check (user_email = auth.email() or public.is_admin());
 create policy "user_points own read/write or admin" on public.user_points for all using (user_email = auth.email() or public.is_admin()) with check (user_email = auth.email() or public.is_admin());

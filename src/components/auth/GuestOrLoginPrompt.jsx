@@ -8,7 +8,7 @@ const features = [
   { icon: Sparkles, text: 'Personal wellness tracking' },
 ];
 
-export default function GuestOrLoginPrompt({ onGuest, onLogin, onSignup }) {
+export default function GuestOrLoginPrompt({ onGuest, onLogin, onSignup, onGoogle }) {
   // Fall back to onLogin if no dedicated signup handler provided
   onSignup = onSignup || onLogin;
   return (
@@ -38,6 +38,9 @@ export default function GuestOrLoginPrompt({ onGuest, onLogin, onSignup }) {
 
         {/* CTAs */}
         <div className="space-y-3">
+          <Button onClick={onGoogle} variant="secondary" className="w-full rounded-xl h-12 text-sm font-semibold">
+            Continue with Google
+          </Button>
           <Button onClick={onSignup} className="w-full rounded-xl h-12 text-sm font-semibold shadow-sm">
             Create a Free Account
           </Button>

@@ -25,15 +25,18 @@ export default function ProfileSettingsModal({ user, onClose, onSaved }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [usernameError, setUsernameError] = useState('');
+  const [saveError, setSaveError] = useState('');
   const [interestInput, setInterestInput] = useState('');
   const [interests, setInterests] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [deleting, setDeleting] = useState(false);
 
+  const userEmail = user?.email;
+
   useEffect(() => {
-    if (!user) return;
-    base44.entities.UserProfile.filter({ user_email: user.email }).then(profiles => {
+    if (!userEmail) return;
+    base44.entities.UserProfile.filter({ user_email: userEmail }).then(profiles => {
       const p = profiles[0];
       setProfile(p || null);
       if (p) {
@@ -47,12 +50,12 @@ export default function ProfileSettingsModal({ user, onClose, onSaved }) {
           avatar_color: p.avatar_color || '#a78bfa',
           avatar_url: p.avatar_url || '',
         });
-        setInterests(p.interests || []);
+        setInterests(Array.isArray(p.interests) ? p.interests : []);
       } else {
         setForm(f => ({ ...f, display_name: user.full_name || '' }));
       }
     }).catch(() => {});
-  }, [user]);
+  }, [userEmail]); // Stable: avoid wiping edits when AuthContext refreshes the user object reference
 
   const handleSave = async () => {
     const cleanUsername = form.username.trim().replace(/\s+/g, '_').toLowerCase();
@@ -65,17 +68,53 @@ export default function ProfileSettingsModal({ user, onClose, onSaved }) {
       return;
     }
     setUsernameError('');
+    setSaveError('');
     setSaving(true);
-    const data = { ...form, username: cleanUsername, interests, user_email: user.email };
-    if (profile) {
-      await base44.entities.UserProfile.update(profile.id, data);
-    } else {
-      await base44.entities.UserProfile.create(data);
+    try {
+      const normalizedUsername = cleanUsername || null;
+      const patch = {
+        username: normalizedUsername,
+        display_name: (form.display_name || '').trim() || null,
+        bio: (form.bio || '').trim() || null,
+        location: (form.location || '').trim() || null,
+        website: (form.website || '').trim() || null,
+        joined_label: (form.joined_label || '').trim() || null,
+        avatar_color: form.avatar_color || '#a78bfa',
+        avatar_url: (form.avatar_url || '').trim() || null,
+        interests: Array.isArray(interests) ? interests : [],
+      };
+      let row;
+      if (profile) {
+        row = await base44.entities.UserProfile.update(profile.id, patch);
+      } else {
+        row = await base44.entities.UserProfile.create({
+          ...patch,
+          user_email: user.email,
+        });
+      }
+      setProfile(row || null);
+      if (row) {
+        setForm({
+          username: row.username || '',
+          display_name: row.display_name || user.full_name || '',
+          bio: row.bio || '',
+          location: row.location || '',
+          website: row.website || '',
+          joined_label: row.joined_label || '',
+          avatar_color: row.avatar_color || '#a78bfa',
+          avatar_url: row.avatar_url || '',
+        });
+        setInterests(Array.isArray(row.interests) ? row.interests : []);
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+      if (onSaved) onSaved(row);
+    } catch (e) {
+      console.error('Profile save failed:', e);
+      setSaveError(e?.message || 'Could not save profile. Try again.');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-    if (onSaved) onSaved(cleanUsername);
   };
 
   function addInterest(e) {
@@ -221,6 +260,9 @@ export default function ProfileSettingsModal({ user, onClose, onSaved }) {
             <p className="text-muted-foreground text-xs">{user?.email}</p>
           </div>
 
+          {saveError && (
+            <p className="text-xs text-destructive">{saveError}</p>
+          )}
           <div className="flex gap-2 pt-1">
             <Button onClick={handleSave} disabled={saving} className="flex-1 rounded-xl">
               {saved ? <><Check className="w-4 h-4 mr-1" />Saved!</> : saving ? 'Saving...' : 'Save Changes'}

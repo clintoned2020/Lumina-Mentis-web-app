@@ -69,7 +69,8 @@ const AuthenticatedApp = () => {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
       const navigateToSignup = () => base44.auth.redirectToLogin(window.location.href + '?signup=true');
-      return <GuestOrLoginPrompt onGuest={() => { sessionStorage.setItem('lumina_guest', 'true'); window.location.reload(); }} onLogin={navigateToLogin} onSignup={navigateToSignup} />;
+      const navigateToGoogle = () => base44.auth.signInWithGoogle(window.location.href);
+      return <GuestOrLoginPrompt onGuest={() => { sessionStorage.setItem('lumina_guest', 'true'); window.location.reload(); }} onLogin={navigateToLogin} onSignup={navigateToSignup} onGoogle={navigateToGoogle} />;
     }
   }
 
@@ -77,7 +78,8 @@ const AuthenticatedApp = () => {
   const isGuest = sessionStorage.getItem('lumina_guest') === 'true';
   if (!isAuthenticated && !isGuest) {
     const navigateToSignup = () => base44.auth.redirectToLogin(window.location.href + '?signup=true');
-    return <GuestOrLoginPrompt onGuest={() => { sessionStorage.setItem('lumina_guest', 'true'); window.location.reload(); }} onLogin={navigateToLogin} onSignup={navigateToSignup} />;
+    const navigateToGoogle = () => base44.auth.signInWithGoogle(window.location.href);
+    return <GuestOrLoginPrompt onGuest={() => { sessionStorage.setItem('lumina_guest', 'true'); window.location.reload(); }} onLogin={navigateToLogin} onSignup={navigateToSignup} onGoogle={navigateToGoogle} />;
   }
 
   // Render the main app
