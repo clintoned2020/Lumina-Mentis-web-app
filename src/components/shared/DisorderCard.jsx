@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import BookmarkButton from './BookmarkButton';
+import { normalizeDisorderCategoryKey } from '@/lib/disorderCategory';
 
 const categoryLabels = {
   psychotic: 'Psychotic Spectrum',
@@ -20,20 +21,6 @@ const categoryStyles = {
   neurodevelopmental: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
   other: 'bg-slate-500/10 text-slate-600 border-slate-500/20',
 };
-
-function canonicalCategory(cat) {
-  if (cat == null) return 'other';
-  const raw = String(cat).trim().toLowerCase();
-  if (!raw) return 'other';
-  const v = raw.replace(/[\s-]+/g, '_');
-  const direct = new Set(['psychotic', 'mood', 'anxiety', 'neurodevelopmental', 'other']);
-  if (direct.has(v)) return v;
-  if (v.includes('psychotic') || v.includes('schizo')) return 'psychotic';
-  if (v.includes('mood')) return 'mood';
-  if (v.includes('anxiety') || v.includes('panic') || v.includes('ocd')) return 'anxiety';
-  if (v.includes('neurodevelopmental') || v.includes('adhd') || v.includes('autism') || v.includes('developmental')) return 'neurodevelopmental';
-  return 'other';
-}
 
 export default function DisorderCard({ disorder, index = 0 }) {
   const slug = disorder.slug || '';
@@ -52,8 +39,8 @@ export default function DisorderCard({ disorder, index = 0 }) {
       >
         <ArrowUpRight className="absolute top-8 right-[3rem] lg:top-10 lg:right-[3rem] w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-300 flex-shrink-0 pointer-events-none" />
         <div className="flex items-start mb-4 max-w-[85%]">
-          <Badge variant="outline" className={`text-xs font-medium ${categoryStyles[canonicalCategory(disorder.category)] || categoryStyles.other}`}>
-            {categoryLabels[canonicalCategory(disorder.category)] || 'Other'}
+          <Badge variant="outline" className={`text-xs font-medium ${categoryStyles[normalizeDisorderCategoryKey(disorder.category)] || categoryStyles.other}`}>
+            {categoryLabels[normalizeDisorderCategoryKey(disorder.category)] || 'Other'}
           </Badge>
         </div>
         <h3 className="font-heading text-2xl mb-3">{disorder.name}</h3>
