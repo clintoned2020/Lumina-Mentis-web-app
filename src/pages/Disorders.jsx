@@ -19,6 +19,29 @@ const categories = [
   { value: 'other', label: 'Other' },
 ];
 
+/** Map DB/category text to canonical filter key (handles casing, underscores, stray labels). */
+function normalizeCategoryKey(value) {
+  if (value == null) return 'other';
+  const raw = String(value).trim().toLowerCase();
+  if (!raw) return 'other';
+  const v = raw.replace(/[\s-]+/g, '_');
+
+  const direct = new Set(['psychotic', 'mood', 'anxiety', 'neurodevelopmental', 'other']);
+  if (direct.has(v)) return v;
+
+  if (v.includes('psychotic') || v.includes('schizo')) return 'psychotic';
+  if (v.includes('mood')) return 'mood';
+  if (v.includes('anxiety') || v.includes('panic') || v.includes('ocd') || v.includes('trauma')) return 'anxiety';
+  if (v.includes('neurodevelopmental') || v.includes('adhd') || v.includes('autism') || v.includes('developmental')) return 'neurodevelopmental';
+
+  return 'other';
+}
+
+function disorderMatchesCategory(disorder, activeCategory) {
+  if (activeCategory === 'all') return true;
+  return normalizeCategoryKey(disorder?.category) === activeCategory;
+}
+
 export default function Disorders() {
   const [activeCategory, setActiveCategory] = useState('all');
 
@@ -31,7 +54,7 @@ export default function Disorders() {
 
   const filtered = activeCategory === 'all'
     ? disorders
-    : disorders.filter(d => d.category === activeCategory);
+    : disorders.filter(d => disorderMatchesCategory(d, activeCategory));
 
   return (
     <div className="min-h-screen">

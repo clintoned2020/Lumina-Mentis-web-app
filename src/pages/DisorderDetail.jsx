@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Dna, Cloud, Brain, Heart, Pill, Activity, Users, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,13 +11,31 @@ import ConsultBanner from '../components/shared/ConsultBanner';
 import BookmarkButton from '../components/shared/BookmarkButton';
 import SubPageHeader from '../components/layout/SubPageHeader';
 
+function slugFromRouteParam(slugParam) {
+  if (!slugParam) return '';
+  try {
+    return decodeURIComponent(slugParam).replace(/^\/+|\/+$/g, '').trim();
+  } catch {
+    return String(slugParam).replace(/^\/+|\/+$/g, '').trim();
+  }
+}
+
 export default function DisorderDetail() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const slug = window.location.pathname.split('/disorders/')[1];
+  const { slug: slugParam } = useParams();
+  const slug = useMemo(() => slugFromRouteParam(slugParam), [slugParam]);
 
   const { data: disorders = [], isLoading } = useQuery({
     queryKey: ['disorder', slug],
-    queryFn: () => base44.entities.Disorder.filter({ slug }),
+    enabled: !!slug,
+    queryFn: async () => {
+      const direct = await base44.entities.Disorder.filter({ slug });
+      if (direct?.length) return direct;
+
+      const list = await base44.entities.Disorder.list();
+      const want = slug.toLowerCase();
+      const match = list.filter((d) => (d.slug && d.slug.toLowerCase() === want));
+      return match;
+    },
   });
 
   const disorder = disorders[0];
