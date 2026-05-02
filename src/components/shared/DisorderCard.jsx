@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import BookmarkButton from './BookmarkButton';
+import { normalizeDisorderCategoryKey } from '@/lib/disorderCategory';
 
 const categoryLabels = {
   psychotic: 'Psychotic Spectrum',
@@ -22,30 +23,25 @@ const categoryStyles = {
 };
 
 export default function DisorderCard({ disorder, index = 0 }) {
+  const slug = disorder.slug || '';
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
+      className="group relative rounded-2xl border border-border/60 bg-card/50 hover:bg-card hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-500 h-full"
     >
       <Link
-        to={`/disorders/${disorder.slug}`}
-        className="group block p-6 lg:p-8 rounded-2xl border border-border/60 bg-card/50 hover:bg-card hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-500 h-full"
+        to={slug ? `/disorders/${encodeURIComponent(slug)}` : '/disorders'}
+        className="relative block p-6 lg:p-8 h-full pr-14 lg:pr-14"
+        aria-label={`Open disorder: ${disorder.name}`}
       >
-        <div className="flex items-start justify-between mb-4">
-          <Badge variant="outline" className={`text-xs font-medium ${categoryStyles[disorder.category] || categoryStyles.other}`}>
-            {categoryLabels[disorder.category] || 'Other'}
+        <ArrowUpRight className="absolute top-8 right-[3rem] lg:top-10 lg:right-[3rem] w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-300 flex-shrink-0 pointer-events-none" />
+        <div className="flex items-start mb-4 max-w-[85%]">
+          <Badge variant="outline" className={`text-xs font-medium ${categoryStyles[normalizeDisorderCategoryKey(disorder.category)] || categoryStyles.other}`}>
+            {categoryLabels[normalizeDisorderCategoryKey(disorder.category)] || 'Other'}
           </Badge>
-          <div className="flex items-center gap-1">
-            <BookmarkButton
-              resourceType="disorder"
-              resourceId={disorder.id}
-              resourceName={disorder.name}
-              resourceSlug={disorder.slug}
-            />
-            <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all duration-300" />
-          </div>
         </div>
         <h3 className="font-heading text-2xl mb-3">{disorder.name}</h3>
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
@@ -57,6 +53,15 @@ export default function DisorderCard({ disorder, index = 0 }) {
           </p>
         )}
       </Link>
+      {/* Keep bookmark outside <a> — nested buttons break navigation / accessibility in some browsers */}
+      <div className="absolute top-6 right-5 lg:top-8 lg:right-6 z-10">
+        <BookmarkButton
+          resourceType="disorder"
+          resourceId={disorder.id}
+          resourceName={disorder.name}
+          resourceSlug={disorder.slug}
+        />
+      </div>
     </motion.div>
   );
 }

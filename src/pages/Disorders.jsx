@@ -9,6 +9,7 @@ import { SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import usePullToRefresh from '@/hooks/usePullToRefresh';
 import PullToRefreshIndicator from '@/components/shared/PullToRefreshIndicator';
+import { disorderMatchesCategory } from '@/lib/disorderCategory';
 
 const categories = [
   { value: 'all', label: 'All Conditions' },
@@ -22,7 +23,7 @@ const categories = [
 export default function Disorders() {
   const [activeCategory, setActiveCategory] = useState('all');
 
-  const { data: disorders = [], isLoading, refetch } = useQuery({
+  const { data: disorders = [], isLoading, isError, error, refetch } = useQuery({
     queryKey: ['disorders'],
     queryFn: () => base44.entities.Disorder.list(),
   });
@@ -31,7 +32,7 @@ export default function Disorders() {
 
   const filtered = activeCategory === 'all'
     ? disorders
-    : disorders.filter(d => d.category === activeCategory);
+    : disorders.filter(d => disorderMatchesCategory(d, activeCategory));
 
   return (
     <div className="min-h-screen">
@@ -123,14 +124,45 @@ export default function Disorders() {
                 </div>
               ))}
             </div>
+          ) : isError ? (
+            <div className="col-span-full py-16 text-center space-y-4 max-w-lg mx-auto rounded-2xl border border-destructive/30 bg-destructive/5 px-6">
+              <p className="text-sm font-medium text-foreground">Could not load disorders</p>
+              <p className="text-xs text-muted-foreground">
+                {(error && (error.message || String(error))) ||
+                  'Check browser network tab, Supabase env (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY), and that the disorder table exists.'}
+              </p>
+              <Button type="button" variant="outline" className="rounded-xl" onClick={() => refetch()}>
+                Retry
+              </Button>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((disorder, i) => (
                 <DisorderCard key={disorder.id} disorder={disorder} index={i} />
               ))}
-              {filtered.length === 0 && (
-                <div className="col-span-full py-20 text-center text-muted-foreground">
-                  No conditions found in this category.
+              {filtered.length === 0 && disorders.length === 0 && (
+                <div className="col-span-full py-20 text-center text-muted-foreground space-y-3 max-w-lg mx-auto">
+                  <p>No conditions are in the library yet.</p>
+                  <p className="text-sm">
+                    Seed the <code className="text-xs bg-muted px-1 py-0.5 rounded">disorder</code> table in Supabase, or confirm you are connected to the right project.
+                  </p>
+                  <Button type="button" variant="outline" size="sm" className="rounded-xl" onClick={() => refetch()}>
+                    Reload
+                  </Button>
+                </div>
+              )}
+              {filtered.length === 0 && disorders.length > 0 && (
+                <div className="col-span-full py-20 text-center text-muted-foreground space-y-4 max-w-xl mx-auto">
+                  <p>No conditions match this category filter.</p>
+                  <Button type="button" variant="secondary" className="rounded-xl" onClick={() => setActiveCategory('all')}>
+                    Show all conditions
+                  </Button>
+                  <p className="text-xs text-muted-foreground/90">
+                    Categories in your database:{' '}
+                    <span className="text-foreground font-mono text-[11px]">
+                      {[...new Set(disorders.map(d => d.category).filter(Boolean))].join(', ') || '(empty or null)'}
+                    </span>
+                  </p>
                 </div>
               )}
             </div>
