@@ -82,41 +82,39 @@ const AuthenticatedApp = () => {
     return <GuestOrLoginPrompt onGuest={() => { sessionStorage.setItem('lumina_guest', 'true'); window.location.reload(); }} onLogin={navigateToLogin} onSignup={navigateToSignup} onGoogle={navigateToGoogle} />;
   }
 
-  // Render the main app
+  // Render the main app — use path="/" layout + relative children (pathless layout + absolute child paths can fail to match and fall through to "*")
   return (
     <Routes>
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/disorders" element={<Disorders />} />
-        <Route path="/disorders/:slug" element={<DisorderDetail />} />
-        <Route path="/root-causes" element={<RootCauses />} />
-        <Route path="/symptom-spectrum" element={<SymptomSpectrum />} />
-        <Route path="/remedies" element={<Remedies />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/forum" element={<Forum />} />
-        <Route path="/forum/:threadId" element={<ForumThread />} />
-        <Route path="/wellness" element={<Wellness />} />
-        <Route path="/wellness-progress" element={<WellnessProgress />} />
-        <Route path="/wellness-circles" element={<WellnessCircles />} />
-        <Route path="/journal" element={<Journal />} />
-        <Route path="/saved" element={<SavedResources />} />
-        <Route path="/profile/:email" element={<UserProfilePage />} />
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/admin/moderation" element={<AdminModeration />} />
-        <Route path="/admin/console" element={<AdminConsole />} />
-        <Route path="/groups" element={<SupportGroups />} />
-        <Route path="/groups/:groupId" element={<GroupChat />} />
-        <Route path="/toolbox" element={<CopingToolbox />} />
-        <Route path="/directory" element={<SupportDirectory />} />
-        <Route path="/professional/:email" element={<ProfessionalProfile />} />
-        <Route path="/mindfulness" element={<Mindfulness />} />
-        <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/leaderboards" element={<Leaderboards />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/affirmations" element={<AffirmationGallery />} />
-        <Route path="/insights" element={<MoodInsights />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsOfService />} />
+      <Route path="/" element={<AppLayout />}>
+        <Route index element={<Home />} />
+        <Route path="disorders" element={<Disorders />} />
+        <Route path="disorders/:slug" element={<DisorderDetail />} />
+        <Route path="root-causes" element={<RootCauses />} />
+        <Route path="symptom-spectrum" element={<SymptomSpectrum />} />
+        <Route path="remedies" element={<Remedies />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="forum" element={<Forum />} />
+        <Route path="forum/:threadId" element={<ForumThread />} />
+        <Route path="wellness" element={<Wellness />} />
+        <Route path="wellness-progress" element={<WellnessProgress />} />
+        <Route path="wellness-circles" element={<WellnessCircles />} />
+        <Route path="journal" element={<Journal />} />
+        <Route path="saved" element={<SavedResources />} />
+        <Route path="profile/:email" element={<UserProfilePage />} />
+        <Route path="messages" element={<Messages />} />
+        <Route path="admin/moderation" element={<AdminModeration />} />
+        <Route path="admin/console" element={<AdminConsole />} />
+        <Route path="groups" element={<SupportGroups />} />
+        <Route path="groups/:groupId" element={<GroupChat />} />
+        <Route path="toolbox" element={<CopingToolbox />} />
+        <Route path="directory" element={<SupportDirectory />} />
+        <Route path="professional/:email" element={<ProfessionalProfile />} />
+        <Route path="mindfulness" element={<Mindfulness />} />
+        <Route path="dashboard" element={<UserDashboard />} />
+        <Route path="leaderboards" element={<Leaderboards />} />
+        <Route path="resources" element={<Resources />} />
+        <Route path="affirmations" element={<AffirmationGallery />} />
+        <Route path="insights" element={<MoodInsights />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
